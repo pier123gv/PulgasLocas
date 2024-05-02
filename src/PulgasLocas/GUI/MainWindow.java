@@ -21,12 +21,24 @@ public class MainWindow extends javax.swing.JFrame {
      * Creates new form MainWindow
      */
     private double maxScore;
-    public MainWindow() {
+    private int width;
+    private int height;
+    private String nombre;
+    private DialogNombre dialog;
+    public MainWindow(int width, int height) {
         initComponents();
         maxScore = 0;
-        DialogNombre dialog = new DialogNombre(this,true,this.getMaxScore());
+        this.width = width;
+        this.height = height;
+        this.setSize(width, height);
+        dialog = new DialogNombre(this,true,this.getMaxScore());
         dialog.setVisible(true);
-        
+        nombre = dialog.getNombre();
+        lNombre.setText(nombre);
+        Simulador garden = new Simulador(width, height);
+        this.setGarden(garden);
+        this.setTitle("Simulador de Pulgas locas");
+        this.setVisible(true);
     }
     
     public double getMaxScore(){
@@ -41,6 +53,8 @@ public class MainWindow extends javax.swing.JFrame {
         super.paint(g);
         
         garden.draw(g);
+        lNombre.setText(nombre);
+        lNombre.setVisible(true);
     }
     
     
@@ -54,7 +68,7 @@ public class MainWindow extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
+        lNombre = new javax.swing.JLabel();
         lScore = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -69,7 +83,7 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setText("Score: ");
+        lNombre.setText("Score: ");
 
         lScore.setText("jLabel2");
 
@@ -79,7 +93,7 @@ public class MainWindow extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(270, Short.MAX_VALUE)
-                .addComponent(jLabel1)
+                .addComponent(lNombre)
                 .addGap(18, 18, 18)
                 .addComponent(lScore)
                 .addGap(34, 34, 34))
@@ -89,7 +103,7 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
+                    .addComponent(lNombre)
                     .addComponent(lScore))
                 .addContainerGap(257, Short.MAX_VALUE))
         );
@@ -99,12 +113,18 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
         if (evt.getKeyChar() == 'q'){
-            System.exit(0);
+            acabar();
         }
         
         if (evt.getKeyCode() == KeyEvent.VK_S | evt.getKeyCode() == KeyEvent.VK_H | evt.getKeyCode() == KeyEvent.VK_P){
             garden.keyPressed(evt.getKeyCode());
             repaint();
+            lNombre.setText(nombre);
+            lNombre.setVisible(true);
+        }
+        
+        if(garden.juegoAcabado()){
+            acabar();
         }
 
 
@@ -113,24 +133,36 @@ public class MainWindow extends javax.swing.JFrame {
     private void formMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMousePressed
         garden.mouseClicked(evt.getX(), evt.getY(),evt.getButton());
         repaint();
+        lNombre.setText(nombre);
+        lNombre.setVisible(true);
+        if(garden.juegoAcabado()){
+            acabar();
+        }
     }//GEN-LAST:event_formMousePressed
 
+    public void acabar(){
+        if(maxScore < garden.getScore()){
+            maxScore = garden.getScore();
+        }
+        dialog.setNombre(nombre);
+        dialog.setMaxScore(getMaxScore());
+        Simulador garden = new Simulador(width, height);
+        this.setGarden(garden);
+        dialog.setVisible(true);
+        
+    }
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        MainWindow window = new MainWindow();
-        window.setSize(800, 600);
-        window.setTitle("Simulador de Pulgas locas");
+        MainWindow window = new MainWindow(800, 600);
         
-        Simulador garden = new Simulador(0, 0, window.getWidth(), window.getHeight());
-        window.setGarden(garden);
-        window.setVisible(true);
+        
         
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel lNombre;
     private javax.swing.JLabel lScore;
     // End of variables declaration//GEN-END:variables
 }

@@ -22,27 +22,30 @@ import java.util.logging.Logger;
  *
  * @author pier
  */
-public class Simulador extends Sprite{
+public class Simulador {
     
     public static final int TYPE_NORMAL = 1;
     public static final int TYPE_MUTANTE = 2;
     private double score;
 
     private ArrayList<Pulga>pulgas;
+    private boolean juegoIniciado;
     private Explosion explosion;
-    public Simulador(int x, int y, int width, int height){
-        super(x, y, width, height, Color.gray);
-        
+    private int width;
+    private int height;
+    public Simulador(int width, int height){
+        this.width = width;
+        this.height = height;        
         pulgas = new ArrayList<>();
         explosion = null;
         score = 0;
+        juegoIniciado = false;
     }
-    
+    public double getScore(){
+        return score;
+    }
 
-    @Override
     public void draw(Graphics g) {
-        g.setColor(color);
-        g.fillRect(x, y, width, height);
         
         for (Pulga pulga : pulgas) {
             pulga.draw(g);
@@ -59,7 +62,7 @@ public class Simulador extends Sprite{
     }
     
     private void addPulga(int type){
-        
+        juegoIniciado = true;
         Pulga pulga = null;
         if (type == TYPE_NORMAL){
             int px = (int)((width - Pulga.WIDTHNormal) * Math.random());
@@ -87,6 +90,12 @@ public class Simulador extends Sprite{
             saltarTodos();
         }
 
+    }
+    public boolean juegoAcabado(){
+        if(juegoIniciado && pulgas.size() == 0){
+            return true;
+        }
+        else return false;
     }
     private void saltarTodos(){
         for(Pulga pulga:pulgas){
