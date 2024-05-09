@@ -11,7 +11,6 @@ import PulgasLocas.Juego.Simulador;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferStrategy;
 
 /**
@@ -20,7 +19,7 @@ import java.awt.image.BufferStrategy;
  */
 public class MainWindow extends javax.swing.JFrame implements Repaintable, Boundable{
 
-    private Simulador garden;
+    private Simulador simuladorBatalla;
     private final BufferStrategy bf;
     /**
      * Creates new form MainWindow
@@ -30,45 +29,48 @@ public class MainWindow extends javax.swing.JFrame implements Repaintable, Bound
     private int height;
     private String nombre;
     private DialogNombre dialog;
+    private Hilo mainThread;
+    private double score;
+    private Simulador garden;
     public MainWindow(int width, int height) {
         initComponents();
         createBufferStrategy(2);        //creamos dos buffers
         bf = this.getBufferStrategy();
         maxScore = 0;
+        score = 0;
         this.width = width;
         this.height = height;
         this.setSize(width, height);
         dialog = new DialogNombre(this,true,this.getMaxScore());
         dialog.setVisible(true);
         nombre = dialog.getNombre();
-        lNombre.setText(nombre);
-        Simulador garden = new Simulador(width, height);
+        garden = new Simulador(width, height);
         this.setGarden(garden);
         this.setTitle("Simulador de Pulgas locas");
         this.setVisible(true);
-        Hilo mainThread = new Hilo(garden,this, this);
+        mainThread = new Hilo(garden,this, this);
         mainThread.start();
+        this.setSize(width+50,height+50);
     }
     
     public double getMaxScore(){
         return maxScore;
     }
     public void setGarden(Simulador garden){
-        this.garden = garden;
+        this.simuladorBatalla = garden;
     }
 
     @Override
     public void paint(Graphics g) {
         Graphics2D g2 = null;
+        score = garden.getScore();
  
         try {
             //obtenemos uno de los buffers para dibujar
             g2 = (Graphics2D) bf.getDrawGraphics();
             super.paint(g2);
-            garden.draw(g);
-            lNombre.setText(nombre);
-            lNombre.setVisible(true);
-            
+            simuladorBatalla.draw(g2);
+            this.setTitle("MataPulgas 3000 \t\t" + nombre +": " + score +" puntos.");
         } finally {
             g2.dispose();
         }
@@ -88,9 +90,6 @@ public class MainWindow extends javax.swing.JFrame implements Repaintable, Bound
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        lNombre = new javax.swing.JLabel();
-        lScore = new javax.swing.JLabel();
-
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -103,29 +102,15 @@ public class MainWindow extends javax.swing.JFrame implements Repaintable, Bound
             }
         });
 
-        lNombre.setText("Score: ");
-
-        lScore.setText("jLabel2");
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(270, Short.MAX_VALUE)
-                .addComponent(lNombre)
-                .addGap(18, 18, 18)
-                .addComponent(lScore)
-                .addGap(34, 34, 34))
+            .addGap(0, 400, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(26, 26, 26)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lNombre)
-                    .addComponent(lScore))
-                .addContainerGap(257, Short.MAX_VALUE))
+            .addGap(0, 300, Short.MAX_VALUE)
         );
 
         pack();
@@ -136,14 +121,12 @@ public class MainWindow extends javax.swing.JFrame implements Repaintable, Bound
             acabar();
         }
         
-        if (evt.getKeyCode() == KeyEvent.VK_S | evt.getKeyCode() == KeyEvent.VK_H | evt.getKeyCode() == KeyEvent.VK_P | evt.getKeyCode() == KeyEvent.VK_F) {
-            garden.keyPressed(evt.getKeyCode(),this);
+        if (evt.getKeyCode() == KeyEvent.VK_S | evt.getKeyCode() == KeyEvent.VK_SPACE | evt.getKeyCode() == KeyEvent.VK_P | evt.getKeyCode() == KeyEvent.VK_M | evt.getKeyCode() == KeyEvent.VK_S  | evt.getKeyCode() == KeyEvent.VK_F) {
+            simuladorBatalla.keyPressed(evt.getKeyCode(),this);
             repaint();
-            lNombre.setText(nombre);
-            lNombre.setVisible(true);
         }
         
-        if(garden.juegoAcabado()){
+        if(simuladorBatalla.juegoAcabado()){
             acabar();
         }
 
@@ -151,25 +134,24 @@ public class MainWindow extends javax.swing.JFrame implements Repaintable, Bound
     }//GEN-LAST:event_formKeyPressed
 
     private void formMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMousePressed
-        garden.mouseClicked(evt.getX(), evt.getY(),evt.getButton(), this);
+        simuladorBatalla.mouseClicked(evt.getX(), evt.getY(), this);
         repaint();
-        lNombre.setText(nombre);
-        lNombre.setVisible(true);
-        if(garden.juegoAcabado()){
+        if(simuladorBatalla.juegoAcabado()){
             acabar();
         }
     }//GEN-LAST:event_formMousePressed
 
     public void acabar(){
-        if(maxScore < garden.getScore()){
-            maxScore = garden.getScore();
+        if(maxScore < simuladorBatalla.getScore()){
+            maxScore = simuladorBatalla.getScore();
         }
         dialog.setNombre(nombre);
         dialog.setMaxScore(getMaxScore());
-        Simulador garden = new Simulador(width, height);
+        garden = new Simulador(width, height);
         this.setGarden(garden);
         dialog.setVisible(true);
-        
+        mainThread = new Hilo(garden,this, this);
+        mainThread.start();
     }
     /**
      * @param args the command line arguments
@@ -181,8 +163,6 @@ public class MainWindow extends javax.swing.JFrame implements Repaintable, Bound
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel lNombre;
-    private javax.swing.JLabel lScore;
     // End of variables declaration//GEN-END:variables
 
     @Override

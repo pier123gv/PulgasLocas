@@ -27,7 +27,6 @@ public class Hilo extends Thread{
     public void run(){
         for(;;){
             simulador.move(repintable, bounds);
-            repintable.repaint();
             try{
                 Hilo.sleep(10);
             }

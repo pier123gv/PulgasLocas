@@ -26,7 +26,7 @@ import java.util.logging.Logger;
  *
  * @author pier
  */
-public class Simulador{
+public class Simulador extends Sprite{
     
     public static final int TYPE_NORMAL = 1;
     public static final int TYPE_MUTANTE = 2;
@@ -40,8 +40,10 @@ public class Simulador{
     private int height;
     
     public Simulador(int width, int height){
+        
+        super(0,0,width,height,new Color(160,185,150));
         this.width = width;
-        this.height = height;        
+        this.height = height;    
         pulgas = new ArrayList<>();
         explosion = null;
         score = 0;
@@ -53,7 +55,8 @@ public class Simulador{
     }
 
     public void draw(Graphics g) {
-        
+        g.setColor(this.getColor());
+        g.fillRect(0,0,width+50,height+50);
         for (Pulga pulga : pulgas) {
             pulga.draw(g);
         }
@@ -67,6 +70,7 @@ public class Simulador{
         Pulga pulga = null;
         pulga = new PulgaNormal(x, y, repaint);
         pulgas.add(pulga);
+        repaint.repaint();
     }
     
     private void addPulga(int type, Repaintable repaint){
@@ -78,11 +82,9 @@ public class Simulador{
         if (type == TYPE_NORMAL){
             
             pulga = new PulgaNormal(px, py, repaint);
-            pulgas.add(pulga);
         }
         else if (type == TYPE_MUTANTE){
             pulga = new PulgaMutante(px, py, repaint);
-            pulgas.add(pulga);
         }
         else if (type == TYPE_FANTASMA){
             pulga = new PulgaFantasma(px, py, repaint);
@@ -94,10 +96,10 @@ public class Simulador{
     
     public void keyPressed(int code, Repaintable repaint){
         
-        if (code == KeyEvent.VK_H){
+        if (code == KeyEvent.VK_P){
             addPulga(TYPE_NORMAL,repaint);
         }
-        if (code == KeyEvent.VK_P){
+        if (code == KeyEvent.VK_M){
             addPulga(TYPE_MUTANTE,repaint);
         }
         if (code == KeyEvent.VK_F){
@@ -106,7 +108,23 @@ public class Simulador{
         if (code == KeyEvent.VK_S){
             saltarTodos();
         }
+        if (code == KeyEvent.VK_SPACE){
+            this.nuke();
+        }
 
+    }
+    public void nuke(){
+        
+        for(int i = 0; i< pulgas.size()/2 +1 ; i++){
+                pulgas.remove(i);
+                score+=1;
+            }
+        if(explosion != null){
+            int x = explosion.getX();
+            int y = explosion.getY();
+            explosion = new Explosion(x-180,y-180,360,360);
+            return;
+        }
     }
     public boolean juegoAcabado(){
         if(juegoIniciado && pulgas.size() == 0){
@@ -136,20 +154,9 @@ public class Simulador{
         return null;
     }
     
-    public void mouseClicked(int x, int y, int button, Repaintable repaint){
+    public void mouseClicked(int x, int y, Repaintable repaint){
         
-        if(button == MouseEvent.BUTTON2){
-            for(int i = 0; i< pulgas.size()/2; i++){
-                pulgas.remove(i);
-                score+=1;
-            }
-            explosion = new Explosion(x-180,y-180,360,360);
-            return;
-        
-        }
-        else{
-            explosion = new Explosion(x-22,y-22,45,45);
-        }
+        explosion = new Explosion(x-22,y-22,45,45);
         Pulga pulga = clickedApple(x, y);
         if (pulga != null){
             if(pulga.getClass().getSimpleName().equals("PulgaMutante")){
@@ -158,6 +165,7 @@ public class Simulador{
             pulgas.remove(pulga);
             score+=1;
         }
+        repaint.repaint();
         
     }
     

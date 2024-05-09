@@ -41,18 +41,23 @@ public class PulgaFantasma extends Pulga{
     @Override
     public void move(Repaintable repaint, Boundable bounds){
         Random rand = new Random();
-        int movX = rand.nextInt(3)*dirX;
-        int movY= rand.nextInt(3)*dirY;
         
-        if( this.x + movX < 0 || this.x + movX > bounds.getBoundWidth()){
+        int movX = (rand.nextInt(2)+1)*dirX;
+        int movY= (rand.nextInt(2)+1)*dirY;
+        
+        if( this.x + movX <= 0 || this.x + movX > bounds.getBoundWidth()){
             dirX*=-1;
+            move(repaint, bounds);
+            return;
         }
-        else if( this.y + movY < 0 || this.y + movY > bounds.getBoundHeight()){
+        if( this.y + movY <= 0 || this.y + movY > bounds.getBoundHeight()){
             dirY*=-1;
+            move(repaint, bounds);
+            return;
         }
         
-        this.x=x+(movX*dirX);
-        this.y=y+(movY*dirY);
+        this.x=x + movX;
+        this.y=y + movY;
         repaint.repaint();
     }
     

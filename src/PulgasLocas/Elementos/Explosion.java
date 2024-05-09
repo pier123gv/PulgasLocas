@@ -31,8 +31,17 @@ public class Explosion extends Sprite {
         catch(IOException e){
             
         }
-        
+     
 
     }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+    
     
 }
