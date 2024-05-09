@@ -23,5 +23,5 @@ public abstract class Pulga extends Sprite{
     @Override
     public abstract void draw(Graphics g);
     public abstract void saltarA(int x, int y);
-    
+    public abstract void move(Repaintable repaint, Boundable bounds);
 }

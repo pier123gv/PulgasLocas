@@ -34,7 +34,6 @@ public class Simulador{
     private double score;
 
     private ArrayList<Pulga>pulgas;
-    private ArrayList<PulgaFantasma> fantasmas;
     private boolean juegoIniciado;
     private Explosion explosion;
     private int width;
@@ -44,7 +43,6 @@ public class Simulador{
         this.width = width;
         this.height = height;        
         pulgas = new ArrayList<>();
-        fantasmas = new ArrayList<>();
         explosion = null;
         score = 0;
         juegoIniciado = false;
@@ -57,9 +55,6 @@ public class Simulador{
     public void draw(Graphics g) {
         
         for (Pulga pulga : pulgas) {
-            pulga.draw(g);
-        }
-        for (PulgaFantasma pulga : fantasmas) {
             pulga.draw(g);
         }
         if (explosion != null){
@@ -78,22 +73,21 @@ public class Simulador{
         juegoIniciado = true;
         int px = (int)((width - Pulga.WIDTHNormal) * Math.random());
         int py = (int)((height - Pulga.HEIGHTNormal) * Math.random());
+        Pulga pulga = null;
         
         if (type == TYPE_NORMAL){
-            Pulga pulga = null;
+            
             pulga = new PulgaNormal(px, py, repaint);
             pulgas.add(pulga);
         }
         else if (type == TYPE_MUTANTE){
-            Pulga pulga = null;
             pulga = new PulgaMutante(px, py, repaint);
             pulgas.add(pulga);
         }
         else if (type == TYPE_FANTASMA){
-            PulgaFantasma pulga = null;
             pulga = new PulgaFantasma(px, py, repaint);
-            fantasmas.add(pulga);
         }
+        pulgas.add(pulga);
         
     }
     
@@ -122,7 +116,7 @@ public class Simulador{
     }
     
     public void move(Repaintable repaint, Boundable bounds){
-        for(PulgaFantasma pulga : fantasmas){
+        for(Pulga pulga : pulgas){
             pulga.move(repaint,bounds);
         }
     }
@@ -135,11 +129,6 @@ public class Simulador{
     }
     private Pulga clickedApple(int x, int y){
         for (Pulga pulga : pulgas) {
-            if (x <= (pulga.getX()+pulga.getWidth()) & x >= (pulga.getX()) & y <= (pulga.getY()+pulga.getHeight()) & y >= (pulga.getY())){
-                return pulga;
-            }
-        }
-        for (Pulga pulga : fantasmas) {
             if (x <= (pulga.getX()+pulga.getWidth()) & x >= (pulga.getX()) & y <= (pulga.getY()+pulga.getHeight()) & y >= (pulga.getY())){
                 return pulga;
             }

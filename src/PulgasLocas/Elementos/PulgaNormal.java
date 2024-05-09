@@ -42,4 +42,9 @@ public class PulgaNormal extends Pulga{
         this.x=x;
         this.y=y;
     }
+
+    @Override
+    public void move(Repaintable repaint, Boundable bounds) {
+        
+    }
 }

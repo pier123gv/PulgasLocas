@@ -9,8 +9,10 @@ import PulgasLocas.Elementos.Hilo;
 import PulgasLocas.Elementos.Repaintable;
 import PulgasLocas.Juego.Simulador;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferStrategy;
 
 /**
  *
@@ -19,7 +21,7 @@ import java.awt.event.MouseEvent;
 public class MainWindow extends javax.swing.JFrame implements Repaintable, Boundable{
 
     private Simulador garden;
-    
+    private final BufferStrategy bf;
     /**
      * Creates new form MainWindow
      */
@@ -30,6 +32,8 @@ public class MainWindow extends javax.swing.JFrame implements Repaintable, Bound
     private DialogNombre dialog;
     public MainWindow(int width, int height) {
         initComponents();
+        createBufferStrategy(2);        //creamos dos buffers
+        bf = this.getBufferStrategy();
         maxScore = 0;
         this.width = width;
         this.height = height;
@@ -55,11 +59,22 @@ public class MainWindow extends javax.swing.JFrame implements Repaintable, Bound
 
     @Override
     public void paint(Graphics g) {
-        super.paint(g);
-        
-        garden.draw(g);
-        lNombre.setText(nombre);
-        lNombre.setVisible(true);
+        Graphics2D g2 = null;
+ 
+        try {
+            //obtenemos uno de los buffers para dibujar
+            g2 = (Graphics2D) bf.getDrawGraphics();
+            super.paint(g2);
+            garden.draw(g);
+            lNombre.setText(nombre);
+            lNombre.setVisible(true);
+            
+        } finally {
+            g2.dispose();
+        }
+ 
+        //pintamos el buffer en pantalla
+        bf.show();
     }
     
     
