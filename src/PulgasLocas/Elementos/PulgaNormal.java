@@ -18,8 +18,9 @@ public class PulgaNormal extends Pulga{
    
     
     
-    public PulgaNormal(int x, int y){
+    public PulgaNormal(int x, int y, Repaintable repaint){
         super(x, y, WIDTHNormal, HEIGHTNormal, Color.RED);
+        repaint.repaint();
     }
 
     @Override

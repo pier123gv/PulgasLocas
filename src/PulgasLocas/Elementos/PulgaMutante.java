@@ -18,8 +18,9 @@ import javax.imageio.ImageIO;
 public class PulgaMutante extends Pulga{
     
     
-    public PulgaMutante(int x, int y){
+    public PulgaMutante(int x, int y, Repaintable repaint){
         super(x, y, WIDTHMutante, HEIGHTMutante, Color.BLACK);
+        repaint.repaint();
     }
 
     @Override

@@ -4,6 +4,9 @@
  */
 package PulgasLocas.GUI;
 
+import PulgasLocas.Elementos.Boundable;
+import PulgasLocas.Elementos.Hilo;
+import PulgasLocas.Elementos.Repaintable;
 import PulgasLocas.Juego.Simulador;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
@@ -13,7 +16,7 @@ import java.awt.event.MouseEvent;
  *
  * @author santi
  */
-public class MainWindow extends javax.swing.JFrame {
+public class MainWindow extends javax.swing.JFrame implements Repaintable, Boundable{
 
     private Simulador garden;
     
@@ -39,6 +42,8 @@ public class MainWindow extends javax.swing.JFrame {
         this.setGarden(garden);
         this.setTitle("Simulador de Pulgas locas");
         this.setVisible(true);
+        Hilo mainThread = new Hilo(garden,this, this);
+        mainThread.start();
     }
     
     public double getMaxScore(){
@@ -116,8 +121,8 @@ public class MainWindow extends javax.swing.JFrame {
             acabar();
         }
         
-        if (evt.getKeyCode() == KeyEvent.VK_S | evt.getKeyCode() == KeyEvent.VK_H | evt.getKeyCode() == KeyEvent.VK_P){
-            garden.keyPressed(evt.getKeyCode());
+        if (evt.getKeyCode() == KeyEvent.VK_S | evt.getKeyCode() == KeyEvent.VK_H | evt.getKeyCode() == KeyEvent.VK_P | evt.getKeyCode() == KeyEvent.VK_F) {
+            garden.keyPressed(evt.getKeyCode(),this);
             repaint();
             lNombre.setText(nombre);
             lNombre.setVisible(true);
@@ -131,7 +136,7 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_formKeyPressed
 
     private void formMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMousePressed
-        garden.mouseClicked(evt.getX(), evt.getY(),evt.getButton());
+        garden.mouseClicked(evt.getX(), evt.getY(),evt.getButton(), this);
         repaint();
         lNombre.setText(nombre);
         lNombre.setVisible(true);
@@ -158,11 +163,20 @@ public class MainWindow extends javax.swing.JFrame {
         MainWindow window = new MainWindow(800, 600);
         
         
-        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel lNombre;
     private javax.swing.JLabel lScore;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public int getBoundWidth() {
+        return width;
+    }
+
+    @Override
+    public int getBoundHeight() {
+        return height;
+    }
 }
